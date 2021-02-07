@@ -1,13 +1,12 @@
 import React from "react";
-import {auth,db} from '../firebase'
+import { auth, db } from "../firebase";
 
 const Login = () => {
   const [email, setEmail] = React.useState("");
   const [pass, setPass] = React.useState("");
   const [error, setError] = React.useState(null);
 
-  const [esRegistro, setRegistro] = React.useState(true);
-
+  const [esRegistro, setRegistro] = React.useState(false);
 
   const procesarDatos = (e) => {
     e.preventDefault();
@@ -29,38 +28,57 @@ const Login = () => {
 
     setError(null);
     console.log("Correcto ...");
-    
-    if(esRegistro){
-        registrar()
+
+    if (esRegistro) {
+      registrar();
+    } else {
+      login();
     }
   };
 
-  const registrar=React.useCallback(async()=>{
-      try {
-          const res = await auth.createUserWithEmailAndPassword(email,pass)
-          await db.collection('usuarios').doc(res.user.email).set({
-              email:res.user.email,
-              uid:res.user.uid
-          })
-          setEmail("")
-          setPass("")
-          setError(null)
-      } catch (error) {
-          console.log(error)
-          if(error.code==="auth/invalid-email"){
-            setError("Email no válido")
-          }
-          if(error.code==="auth/email-already-in-use"){
-            setError("Email ya existe")
-          }
-          
+  const login = React.useCallback(async () => {
+    try {
+      const res = await auth.signInWithEmailAndPassword(email, pass);
+      console.log(res.user);
+    } catch (error) {
+      console.log(error);
+      if (error.code === "auth/invalid-email") {
+        setError("Email no válido");
       }
-  },[email,pass])
+      if (error.code === "auth/user-not-found") {
+        setError("Email no registrado");
+      }
+      if (error.code === "auth/wrong-password") {
+        setError("Contraseña incorrecta");
+      }
+    }
+  },[email, pass]);
+
+  const registrar = React.useCallback(async () => {
+    try {
+      const res = await auth.createUserWithEmailAndPassword(email, pass);
+      await db.collection("usuarios").doc(res.user.email).set({
+        email: res.user.email,
+        uid: res.user.uid,
+      });
+      setEmail("");
+      setPass("");
+      setError(null);
+    } catch (error) {
+      console.log(error);
+      if (error.code === "auth/invalid-email") {
+        setError("Email no válido");
+      }
+      if (error.code === "auth/email-already-in-use") {
+        setError("Email ya existe");
+      }
+    }
+  }, [email, pass]);
 
   return (
     <div className="mt-5">
       <h3 className="text-center">
-        {esRegistro ? "Registro de usuarios" : "Login de acceso"}
+        {esRegistro ? "Registro" : "Login"}
       </h3>
       <hr />
       <div className="row justify-content-center">
@@ -82,17 +100,14 @@ const Login = () => {
               value={pass}
             />
             <button className="btn btn-dark btn-lg w-100 mb-2" type="submit">
-            {
-                  esRegistro?'Registrarse':"Acceder"
-              }
+              {esRegistro ? "Registrarse" : "Acceder"}
             </button>
-            <button 
-            className="btn btn-info btn-sm w-100"
-            onClick={()=>setRegistro(!esRegistro)}
-            type="button">
-              {
-                  esRegistro?'¿Ya estás Registrado?':"¿No tienes cuenta?"
-              }
+            <button
+              className="btn btn-info btn-sm w-100"
+              onClick={() => setRegistro(!esRegistro)}
+              type="button"
+            >
+              {esRegistro ? "¿Ya estás Registrado?" : "¿No tienes cuenta?"}
             </button>
           </form>
         </div>
