@@ -1,7 +1,9 @@
 import React from "react";
 import { auth, db } from "../firebase";
+import {withRouter} from "react-router-dom"
 
-const Login = () => {
+const Login = (props) => {
+
   const [email, setEmail] = React.useState("");
   const [pass, setPass] = React.useState("");
   const [error, setError] = React.useState(null);
@@ -40,6 +42,10 @@ const Login = () => {
     try {
       const res = await auth.signInWithEmailAndPassword(email, pass);
       console.log(res.user);
+      setEmail("");
+      setPass("");
+      setError(null);
+      props.history.push("/admin");
     } catch (error) {
       console.log(error);
       if (error.code === "auth/invalid-email") {
@@ -52,7 +58,7 @@ const Login = () => {
         setError("Contraseña incorrecta");
       }
     }
-  },[email, pass]);
+  }, [email, pass,props.history]);
 
   const registrar = React.useCallback(async () => {
     try {
@@ -64,6 +70,9 @@ const Login = () => {
       setEmail("");
       setPass("");
       setError(null);
+
+      props.history.push("/admin");
+
     } catch (error) {
       console.log(error);
       if (error.code === "auth/invalid-email") {
@@ -73,13 +82,11 @@ const Login = () => {
         setError("Email ya existe");
       }
     }
-  }, [email, pass]);
+  }, [email, pass,props.history]);
 
   return (
     <div className="mt-5">
-      <h3 className="text-center">
-        {esRegistro ? "Registro" : "Login"}
-      </h3>
+      <h3 className="text-center">{esRegistro ? "Registro" : "Login"}</h3>
       <hr />
       <div className="row justify-content-center">
         <div className="col-12 col-sm8 col-md-6 col-xl-4">
@@ -116,4 +123,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default withRouter(Login);
