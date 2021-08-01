@@ -4,8 +4,8 @@ import {withRouter} from "react-router-dom"
 
 const Login = (props) => {
 
-  const [email, setEmail] = React.useState('prueba@prueba.com');
-  const [pass, setPass] = React.useState("prueba123");
+  const [email, setEmail] = React.useState('');
+  const [pass, setPass] = React.useState("");
   const [error, setError] = React.useState(null);
 
   const [esRegistro, setRegistro] = React.useState(false);
