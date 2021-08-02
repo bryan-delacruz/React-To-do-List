@@ -14,7 +14,7 @@ const Navbar = (props) => {
   return (
     <div className="navbar navbar-dark bg-dark">
       <Link className="navbar-brand" to="/">
-        AUTH
+        Wawa Clinic - Clínica de Mascotas
       </Link>
       <div>
         <div className="d-flex">
